@@ -67,7 +67,7 @@ func main() {
 		return
 	}
 
-	workspaces, err := loadWorkspaces()
+	workspaces, err := LoadWorkspaces()
 	if err != nil {
 		item := ResponseItem{
 			Title:    "Something wrong while loading workspaces",
@@ -96,13 +96,13 @@ func main() {
 			channelsList = append(channelsList, item)
 		}
 
-		usersImages := listFiles(workspace.ID + "/images/")
+		usersImages := ListFiles(workspace.ID + "/images/")
 		log.Println(usersImages)
 		users := getUsers(api, workspace.ID)
 		for _, u := range users {
-			hasImage := hasItem(usersImages, u.ID)
+			hasImage := HasItem(usersImages, u.ID)
 			if !hasImage {
-				downloadImage(u.Profile.Image192, workspace.ID+"/images/"+u.ID)
+				DownloadImage(u.Profile.Image192, workspace.ID+"/images/"+u.ID)
 			}
 
 			icon := IconModel{
@@ -139,7 +139,7 @@ func makeAlfredResponse(items []ResponseItem) string {
 	return string(r)
 }
 
-func listFiles(path string) []string {
+func ListFiles(path string) []string {
 	filesInfo, err := ioutil.ReadDir(path)
 	if err != nil {
 		return nil
@@ -151,7 +151,7 @@ func listFiles(path string) []string {
 	return files
 }
 
-func downloadImage(url string, fileName string) {
+func DownloadImage(url string, fileName string) {
 	response, err := http.Get(url)
 	if err != nil {
 		log.Println(err)
@@ -167,7 +167,7 @@ func downloadImage(url string, fileName string) {
 	io.Copy(file, response.Body)
 }
 
-func hasItem(items []string, target string) bool {
+func HasItem(items []string, target string) bool {
 	for _, item := range items {
 		if item == target {
 			return true
@@ -277,7 +277,7 @@ func loadCachedWorkspace() (*slack.TeamInfo, error) {
 	return nil, nil
 }
 
-func loadWorkspaces() ([]WorkplaceInfo, error) {
+func LoadWorkspaces() ([]WorkplaceInfo, error) {
 	file, err := os.Open(WorkspacesListFile)
 	if err != nil {
 		return nil, err
