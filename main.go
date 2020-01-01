@@ -13,6 +13,7 @@ import (
 
 const (
 	WorkspacesListFile = "./workplaces.json"
+	FilePermission     = 0755
 )
 
 type WorkplaceInfo struct {
@@ -188,7 +189,7 @@ func getUsers(api *slack.Client, workspaceID string) []slack.User {
 		if err != nil {
 			log.Println(err)
 		}
-		_ = ioutil.WriteFile(workspaceID+"/users.json", usersJson, 0777)
+		_ = ioutil.WriteFile(workspaceID+"/users.json", usersJson, FilePermission)
 	}
 	return users
 }
@@ -223,7 +224,7 @@ func getChannels(api *slack.Client, workspaceID string) []slack.Channel {
 		if err != nil {
 			log.Println(err)
 		}
-		_ = ioutil.WriteFile(workspaceID+"/channels.json", channelsJson, 0777)
+		_ = ioutil.WriteFile(workspaceID+"/channels.json", channelsJson, FilePermission)
 	}
 	return channels
 }
@@ -294,10 +295,10 @@ func loadWorkspaces() ([]WorkplaceInfo, error) {
 
 	for _, w := range workplaces {
 		if _, err := os.Stat(w.ID); os.IsNotExist(err) {
-			os.Mkdir(w.ID, 0777)
+			os.Mkdir(w.ID, FilePermission)
 		}
 		if _, err := os.Stat(w.ID + "/images"); os.IsNotExist(err) {
-			os.Mkdir(w.ID+"/images", 0777)
+			os.Mkdir(w.ID+"/images", FilePermission)
 		}
 	}
 	return workplaces, nil
@@ -341,5 +342,5 @@ func registerWrokspace(token string) {
 	if err != nil {
 		log.Println("Marshal Error : ", err)
 	}
-	_ = ioutil.WriteFile(WorkspacesListFile, workspacesJson, 0777)
+	_ = ioutil.WriteFile(WorkspacesListFile, workspacesJson, FilePermission)
 }
